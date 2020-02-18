@@ -13,7 +13,7 @@ public interface UserRepository extends GeneralRepository<User> {
 
     int delete(Connection connection, Serializable id) throws SQLException;
 
-    int updateUserStatus(Connection connection, Boolean newStatus, Integer id) throws SQLException;
+    void updateUserStatus(Connection connection, Boolean newStatus, Integer id) throws SQLException;
 
     User findUserByUsername(Connection connection, String username) throws SQLException;
 

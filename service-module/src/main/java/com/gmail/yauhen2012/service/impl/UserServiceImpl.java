@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.gmail.yauhen2012.repository.ConnectionRepository;
@@ -15,6 +16,7 @@ import com.gmail.yauhen2012.repository.impl.UserInformationRepositoryImpl;
 import com.gmail.yauhen2012.repository.impl.UserRepositoryImpl;
 import com.gmail.yauhen2012.repository.model.User;
 import com.gmail.yauhen2012.repository.model.UserInformation;
+import com.gmail.yauhen2012.service.bCryptPasswordVerify.Hashing;
 import com.gmail.yauhen2012.service.UserService;
 import com.gmail.yauhen2012.service.model.AddUserDTO;
 import com.gmail.yauhen2012.service.model.UserDTO;
@@ -102,7 +104,6 @@ public class UserServiceImpl implements UserService {
                 userInformationRepository.delete(connection, id);
                 int affectedRows = userRepository.delete(connection, id);
                 connection.commit();
-                return affectedRows;
             } catch (SQLException e) {
                 connection.rollback();
                 logger.error(e.getMessage(), e);
@@ -115,13 +116,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public int setNewUserFirstName(String newFirstName, Integer id) {
+    public void setNewUserFirstName(String newFirstName, Integer id) {
         try (Connection connection = connectionRepository.getConnection()) {
             connection.setAutoCommit(false);
             try {
-                int affectedRows = userInformationRepository.updateUserFirstName(connection, newFirstName, id);
+                userInformationRepository.updateUserFirstName(connection, newFirstName, id);
                 connection.commit();
-                return affectedRows;
             } catch (SQLException e) {
                 connection.rollback();
                 logger.error(e.getMessage(), e);
@@ -129,18 +129,16 @@ public class UserServiceImpl implements UserService {
         } catch (SQLException e) {
             logger.error(e.getMessage(), e);
         }
-        return 0;
 
     }
 
     @Override
-    public int setNewUserLastName(String newLastName, Integer id) {
+    public void setNewUserLastName(String newLastName, Integer id) {
         try (Connection connection = connectionRepository.getConnection()) {
             connection.setAutoCommit(false);
             try {
-                int affectedRows = userInformationRepository.updateUserLastName(connection, newLastName, id);
+                userInformationRepository.updateUserLastName(connection, newLastName, id);
                 connection.commit();
-                return affectedRows;
             } catch (SQLException e) {
                 connection.rollback();
                 logger.error(e.getMessage(), e);
@@ -148,18 +146,16 @@ public class UserServiceImpl implements UserService {
         } catch (SQLException e) {
             logger.error(e.getMessage(), e);
         }
-        return 0;
 
     }
 
     @Override
-    public int changeUserStatus(Boolean newStatus, Integer id) {
+    public void changeUserStatus(Boolean newStatus, Integer id) {
         try (Connection connection = connectionRepository.getConnection()) {
             connection.setAutoCommit(false);
             try {
-                int affectedRows = userRepository.updateUserStatus(connection, newStatus, id);
+                userRepository.updateUserStatus(connection, newStatus, id);
                 connection.commit();
-                return affectedRows;
             } catch (SQLException e) {
                 connection.rollback();
                 logger.error(e.getMessage(), e);
@@ -167,7 +163,6 @@ public class UserServiceImpl implements UserService {
         } catch (SQLException e) {
             logger.error(e.getMessage(), e);
         }
-        return 0;
 
     }
 
@@ -178,9 +173,17 @@ public class UserServiceImpl implements UserService {
             try {
                 User user = userRepository.findUserByUsername(connection, userName);
                 connection.commit();
-                if (user!=null && user.getActive()) {
-                    return password.equals(user.getPassword());
-                } else return false;
+                if (user != null && user.getActive()) {
+                    String[] mutableHash = new String[1];
+                    Function<String, Boolean> update = hash -> {
+                        mutableHash[0] = hash;
+                        return true;
+                    };
+                    String pasFromDb = user.getPassword();
+                    return Hashing.verifyAndUpdateHash(password, pasFromDb, update);
+                } else {
+                    return false;
+                }
 
             } catch (SQLException e) {
                 connection.rollback();
@@ -237,7 +240,11 @@ public class UserServiceImpl implements UserService {
     private User convertUserDTOToDatabaseUser(AddUserDTO addUserDTO) {
         User toDatabaseUser = new User();
         toDatabaseUser.setUserName(addUserDTO.getUserName());
-        toDatabaseUser.setPassword(addUserDTO.getPassword());
+
+        String passwordAddUserDTO = addUserDTO.getPassword();
+        String hashPassword = Hashing.hash(passwordAddUserDTO);
+        toDatabaseUser.setPassword(hashPassword);
+
         toDatabaseUser.setActive(addUserDTO.getActive());
         toDatabaseUser.setRole(addUserDTO.getRole());
 
@@ -270,4 +277,5 @@ public class UserServiceImpl implements UserService {
         }
         return userDTO;
     }
+
 }

@@ -17,8 +17,13 @@ public class InitListener implements ServletContextListener {
     private RoleService roleService = RoleServiceImpl.getInstance();
     private UserService userService = UserServiceImpl.getInstance();
 
+    @Override
+    public void contextDestroyed(ServletContextEvent sce) {}
+
     public void contextInitialized(ServletContextEvent sce) {
 
+        tableService.deleteAllTables();
+        tableService.createAllTables();
         roleService.createRoles();
 
         AddUserDTO adminUser = new AddUserDTO();
@@ -29,13 +34,6 @@ public class InitListener implements ServletContextListener {
         adminUser.setFirstName("Yauheni");
         adminUser.setLastName("Belanovich");
         userService.add(adminUser);
-    }
-
-    @Override
-    public void contextDestroyed(ServletContextEvent sce) {
-        tableService.deleteAllTables();
-        tableService.createAllTables();
-
     }
 
 }

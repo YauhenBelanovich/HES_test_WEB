@@ -21,6 +21,7 @@
         <repository-module.version>1.0-SNAPSHOT</repository-module.version>
         <mysql-connector-java.version>8.0.18</mysql-connector-java.version>
         <HikariCP.version>3.4.2</HikariCP.version>
+        <jbcrypt.version>0.4</jbcrypt.version>
     </properties>
 
     <dependencies>
@@ -38,6 +39,11 @@
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>${HikariCP.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>${jbcrypt.version}</version>
         </dependency>
     </dependencies>
 

@@ -13,11 +13,11 @@ public interface UserService {
 
     int deleteUserById(Integer id);
 
-    int setNewUserFirstName(String newFirstName, Integer id);
+    void setNewUserFirstName(String newFirstName, Integer id);
 
-    int setNewUserLastName(String newLastName, Integer id);
+    void setNewUserLastName(String newLastName, Integer id);
 
-    int changeUserStatus(Boolean newStatus, Integer id);
+    void changeUserStatus(Boolean newStatus, Integer id);
 
     boolean isValidUser(String username, String password);
 

@@ -46,7 +46,7 @@ public class UserRepositoryImpl extends GeneralRepositoryImpl<User> implements U
     }
 
     @Override
-    public int updateUserStatus(Connection connection, Boolean newStatus, Integer id) throws SQLException {
+    public void updateUserStatus(Connection connection, Boolean newStatus, Integer id) throws SQLException {
         try (
                 PreparedStatement statement = connection.prepareStatement(
                         "UPDATE user SET is_active=? WHERE id=?"
@@ -54,7 +54,7 @@ public class UserRepositoryImpl extends GeneralRepositoryImpl<User> implements U
         ) {
             statement.setBoolean(1, newStatus);
             statement.setInt(2, id);
-            return statement.executeUpdate();
+            statement.executeUpdate();
         }
     }
 

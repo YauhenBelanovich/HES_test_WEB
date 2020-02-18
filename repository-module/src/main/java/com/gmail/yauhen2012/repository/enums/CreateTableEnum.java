@@ -10,7 +10,7 @@ public enum CreateTableEnum {
             "(\n" +
             "    id   INT(11) PRIMARY KEY AUTO_INCREMENT NOT NULL,\n" +
             "    username   VARCHAR(16) NOT NULL,\n" +
-            "    password VARCHAR(16) NOT NULL,\n" +
+            "    password VARCHAR(100) NOT NULL,\n" +
             "    is_active     TINYINT(1),\n" +
             "    createdBy DATETIME DEFAULT NOW(),\n" +
             "    role VARCHAR(40) NOT NULL,\n" +

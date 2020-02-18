@@ -41,7 +41,7 @@ public class UserInformationRepositoryImpl extends GeneralRepositoryImpl<UserInf
     }
 
     @Override
-    public int updateUserFirstName(Connection connection, String newUserFirstName, Integer id) throws SQLException {
+    public void updateUserFirstName(Connection connection, String newUserFirstName, Integer id) throws SQLException {
         try (
                 PreparedStatement statement = connection.prepareStatement(
                         "UPDATE user_information SET first_name=? WHERE user_id=?"
@@ -49,12 +49,12 @@ public class UserInformationRepositoryImpl extends GeneralRepositoryImpl<UserInf
         ) {
             statement.setString(1, newUserFirstName);
             statement.setInt(2, id);
-            return statement.executeUpdate();
+            statement.executeUpdate();
         }
     }
 
     @Override
-    public int updateUserLastName(Connection connection, String newUserLastName, Integer id) throws SQLException {
+    public void updateUserLastName(Connection connection, String newUserLastName, Integer id) throws SQLException {
         try (
                 PreparedStatement statement = connection.prepareStatement(
                         "UPDATE user_information SET last_name=? WHERE user_id=?"
@@ -62,7 +62,7 @@ public class UserInformationRepositoryImpl extends GeneralRepositoryImpl<UserInf
         ) {
             statement.setString(1, newUserLastName);
             statement.setInt(2, id);
-            return statement.executeUpdate();
+            statement.executeUpdate();
         }
     }
 
